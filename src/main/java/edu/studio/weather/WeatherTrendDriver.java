@@ -1,4 +1,4 @@
-package edu.studio.weather;
+package edu.studio.weather.Controllers;
 
 public class WeatherTrendDriver {
 
