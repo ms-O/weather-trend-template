@@ -9,6 +9,13 @@ public class HourlyData {
     private List<Double> pressure_msl;
     
     
+    
+    public HourlyData(List<String> time, List<Double> pressure_msl) {
+        super();
+        this.time = time;
+        this.pressure_msl = pressure_msl;
+    }
+
     public List<String> getTime() {
         return time;
     }
