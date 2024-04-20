@@ -6,37 +6,34 @@ import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.Gson;
 
+import edu.studio.weather.External.Abstraction.IOpenMateoApiClient;
 import edu.studio.weather.Models.Forecast;
 import edu.studio.weather.Models.ForecastData;
 import edu.studio.weather.Services.Abstraction.IWeatherRetrieverService;
-import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 
 public class WeatherRetrieverService implements IWeatherRetrieverService {
 
-    protected static final String API_URL = "https://api.open-meteo.com/v1/gfs";
+    public final IOpenMateoApiClient openMateoApiClient;
+
+    public WeatherRetrieverService(IOpenMateoApiClient openMateoApiClient) {
+        this.openMateoApiClient = openMateoApiClient;
+    }
 
     public CompletableFuture<List<Forecast>> retrieveWeatherAsync() {
-        CompletableFuture<JsonNode> jsonFuture = retrieveWeatherJsonAsync();
-
-        return jsonFuture.thenApply(topLevelNode -> parseWeatherJson(topLevelNode));
+        try {
+            CompletableFuture<JsonNode> jsonFuture = openMateoApiClient.GetWeatherJsonAsync();
+            return jsonFuture.thenApply(topLevelNode -> parseWeatherJson(topLevelNode));
+        } catch (Exception e) {
+            System.out.println("Error retrieving weather data: " + e.getMessage());
+            CompletableFuture<List<Forecast>> exceptionallyCompletedFuture = new CompletableFuture<>();
+            exceptionallyCompletedFuture.completeExceptionally(e);
+            return exceptionallyCompletedFuture;
+        }
     }
 
     // Helper methods
-    private CompletableFuture<JsonNode> retrieveWeatherJsonAsync() {
-        CompletableFuture<HttpResponse<JsonNode>> responseFuture = Unirest.get(API_URL)
-                .queryString("latitude", 40.03705685765183)
-                .queryString("longitude", -75.34258923444702)
-                .queryString("hourly", "pressure_msl")
-                .queryString("timezone", "America/New_York")
-                .asJsonAsync();
-
-        // Return the JSON data
-        return responseFuture.thenApply(response -> response.getBody());
-    }
-
     private List<Forecast> parseWeatherJson(JsonNode topLevelNode) {
         JSONObject outerJsonObject = topLevelNode.getObject();
         JSONObject hourlyValues = outerJsonObject.getJSONObject("hourly");
