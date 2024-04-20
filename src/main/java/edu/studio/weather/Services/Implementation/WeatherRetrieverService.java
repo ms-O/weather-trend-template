@@ -1,4 +1,4 @@
-package edu.studio.weather.Services;
+package edu.studio.weather.Services.Implementation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,12 +8,13 @@ import com.google.gson.Gson;
 
 import edu.studio.weather.Models.Forecast;
 import edu.studio.weather.Models.ForecastData;
+import edu.studio.weather.Services.Abstraction.IWeatherRetrieverService;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 
-public class WeatherRetrieverService {
+public class WeatherRetrieverService implements IWeatherRetrieverService {
 
     protected static final String API_URL = "https://api.open-meteo.com/v1/gfs";
 
