@@ -17,8 +17,8 @@ public class WeatherTrendDriver {
     
     public static HttpResponse<JsonNode> getWeatherData(double latitude, double longitude) {
         HttpResponse<JsonNode> response = Unirest.get(API_URL)
-                .queryString("latitude", 40.03705685765183)
-                .queryString("longitude", -75.34258923444702)
+                .queryString("latitude", latitude)
+                .queryString("longitude", longitude)
                 .queryString("hourly", "pressure_msl")
                 .queryString("timezone","America/New_York")
                 .asJson();

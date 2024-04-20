@@ -38,7 +38,7 @@ public class Notifier {
         
         LocalDateTime dateTime = LocalDateTime.parse(inputDateTime, inputFormatter);
         
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("d'rd' MMMM yyyy 'at' h:mma");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma");
         
         String formattedDateTime = dateTime.format(outputFormatter);
         

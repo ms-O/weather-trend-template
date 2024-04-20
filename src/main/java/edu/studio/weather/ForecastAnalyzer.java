@@ -6,6 +6,7 @@ import java.util.List;
 
 public class ForecastAnalyzer {
     
+    //Interval based approach, only the item in i and i+6 position are considered
     public List<List<String>> calculateMigranePeriods(HourlyData hourlyData) {
         double MIGRANEDROP = 5;
         List<List<String>> triggerTimes = new ArrayList<>();
@@ -32,6 +33,7 @@ public class ForecastAnalyzer {
     }
     
     
+    // More precise approach where all items are considered
     public List<List<String>> calculateMigranePeriodsPrecise(HourlyData hourlyData) {
         double MIGRANEDROP = 5;
         int hourInterval = 6;
