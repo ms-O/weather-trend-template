@@ -12,7 +12,7 @@ public class OpenMeteoParser {
     private String timezone_abbreviation;
     private double elevation;
     private HourlyUnit hourly_units;
-    private static HourlyData hourly;
+    private HourlyData hourly;
     
     public OpenMeteoParser() {
         
@@ -97,7 +97,7 @@ public class OpenMeteoParser {
         this.hourly_units = hourly_units;
     }
 
-    public static HourlyData getHourly() {
+    public HourlyData getHourly() {
         return hourly;
     }
 
