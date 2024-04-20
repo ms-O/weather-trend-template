@@ -1,11 +1,10 @@
 package edu.studio.weather;
 
 public class HourlyUnit {
-    
+
     private String time_iso;
     private String pressure_msl;
-    
-    
+
     public HourlyUnit(String time_iso, String pressure_msl) {
         super();
         this.time_iso = time_iso;
@@ -15,17 +14,17 @@ public class HourlyUnit {
     public String getTime_iso() {
         return time_iso;
     }
-    
+
     public void setTime_iso(String time) {
         this.time_iso = time;
     }
-    
+
     public String getPressure_msl() {
         return pressure_msl;
     }
-    
+
     public void setPressure_msl(String pressure_msl) {
         this.pressure_msl = pressure_msl;
     }
-    
+
 }

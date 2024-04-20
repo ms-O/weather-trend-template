@@ -27,6 +27,6 @@ public class WeatherIntegrationTest {
         String[] lines = baos.toString().split(System.lineSeparator());
         String actual = lines[lines.length - 1];
 
-        assertEquals(true, actual.startsWith(expected));    
+        assertEquals(true, actual.startsWith(expected));
     }
 }
