@@ -3,9 +3,9 @@ package edu.studio.weather;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -19,19 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ForecastTest {
@@ -182,6 +170,20 @@ public class ForecastTest {
 
         String expectedOutput = "Based on our analysis, there are zero migrane triggerring presure drops in the next 7 days.";
         assertEquals(expectedOutput, actualOutput);
+    }
+    
+    @Test
+    public void testPromptUserInput_validCoordinates() {
+        ByteArrayOutputStream mockOutput = new ByteArrayOutputStream();
+        System.setIn(new ByteArrayInputStream("12\n09\n".getBytes()));
+        System.setOut(new PrintStream(mockOutput));
+        
+        List<Double> validCoordinates = WeatherTrendDriver.promptUserInput();
+        List<Double> expectedCoordinates = List.of(12.0, 9.0);
+        assertEquals(expectedCoordinates, validCoordinates);
+
+        String expectedOutput = "Enter latitude (between -90 and 90): Enter longitude (between -180 and 180): ";
+        assertEquals(expectedOutput, mockOutput.toString());
     }
     
 }

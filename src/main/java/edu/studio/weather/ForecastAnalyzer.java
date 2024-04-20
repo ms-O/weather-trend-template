@@ -71,8 +71,6 @@ public class ForecastAnalyzer {
         return triggerTimes;
     }
     
-    
-    
     public static void main(String[] args)  {
         
     }
