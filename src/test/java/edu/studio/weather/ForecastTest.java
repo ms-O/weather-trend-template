@@ -10,6 +10,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.File;
+
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +20,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+//import kong.unirest.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class ForecastTest {
@@ -45,6 +50,22 @@ public class ForecastTest {
         assertEquals(400, response.getStatus());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().getObject().has("error"));
+    }
+    
+    @Test
+    public void testCalculateMigranePeriodsFromJson() throws Exception {
+        // Read JSON file and parse into OpenMeteoParser mock data
+        ObjectMapper objectMapper = new ObjectMapper();
+        OpenMeteoParser jsonData = objectMapper.readValue(new File("src/test/resources/sample_json.json"), OpenMeteoParser.class);
+        HourlyData mockHourlyData = mock(HourlyData.class);
+
+        when(mockHourlyData.getTime()).thenReturn(jsonData.getHourly().getTime());
+        when(mockHourlyData.getPressure_msl()).thenReturn(jsonData.getHourly().getPressure_msl());
+   
+        ForecastAnalyzer forecastAnalyzer = new ForecastAnalyzer();
+        List<List<String>> result = forecastAnalyzer.calculateMigranePeriods(mockHourlyData);
+
+        assertEquals(0, result.size()); // We expect 0 trigger period
     }
 
     @Test

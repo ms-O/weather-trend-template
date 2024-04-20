@@ -6,7 +6,7 @@ public class HourlyData {
 
     private List<String> time;
     private List<Double> pressure_msl;
-
+    
     public HourlyData(List<String> time, List<Double> pressure_msl) {
         super();
         this.time = time;

@@ -12,7 +12,11 @@ public class OpenMeteoParser {
     private String timezone_abbreviation;
     private double elevation;
     private HourlyUnit hourly_units;
-    private HourlyData hourly;
+    private static HourlyData hourly;
+    
+    public OpenMeteoParser() {
+        
+    }
 
     public OpenMeteoParser(double latitude, double longitude, double generationtime_ms, int utc_offset_seconds,
             String timezone, String timezone_abbreviation, double elevation, HourlyUnit hourly_units,
@@ -29,7 +33,7 @@ public class OpenMeteoParser {
         this.hourly = hourly;
     }
 
-    public double getLatitude() {
+    public  double getLatitude() {
         return latitude;
     }
 
@@ -93,7 +97,7 @@ public class OpenMeteoParser {
         this.hourly_units = hourly_units;
     }
 
-    public HourlyData getHourly() {
+    public static HourlyData getHourly() {
         return hourly;
     }
 

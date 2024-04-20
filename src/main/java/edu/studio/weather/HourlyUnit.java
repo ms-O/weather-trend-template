@@ -1,10 +1,18 @@
 package edu.studio.weather;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HourlyUnit {
 
     private String time_iso;
     private String pressure_msl;
 
+    
+    public HourlyUnit() {
+    
+    }
+    
     public HourlyUnit(String time_iso, String pressure_msl) {
         super();
         this.time_iso = time_iso;

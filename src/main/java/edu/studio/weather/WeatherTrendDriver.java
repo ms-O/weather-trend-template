@@ -95,6 +95,7 @@ public class WeatherTrendDriver {
         Double longitude = latAndLong.get(1);
         HttpResponse<JsonNode> response = getWeatherData(latitude, longitude);
         JsonNode jsonNode = response.getBody();
+//        System.out.print(jsonNode);
         OpenMeteoParser openMeteoParser = parseJsonResponseToObject(jsonNode);
         HourlyData hourlyData = openMeteoParser.getHourly();
         List<List<String>> migraneTriggerTimes = forecastAnalyzer.calculateMigranePeriodsPrecise(hourlyData);
