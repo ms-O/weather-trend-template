@@ -1,12 +1,13 @@
 package edu.studio.weather.Services.Implementation;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import edu.studio.weather.Models.Forecast;
+import edu.studio.weather.Models.Result;
 import edu.studio.weather.Services.Abstraction.IForecastAnalyzerService;
 import edu.studio.weather.Services.Abstraction.IWeatherRetrieverService;
 
@@ -20,13 +21,14 @@ public class ForecastAnalyzerService implements IForecastAnalyzerService {
         this.weatherRetrieverService = weatherRetrieverService;
     }
 
-    public CompletableFuture<Map<LocalDateTime, LocalDateTime>> analyzeForecasts() {
+    public CompletableFuture<List<Result>> analyzeForecasts() {
         return weatherRetrieverService.retrieveWeatherAsync().thenApply((List<Forecast> forecasts) -> {
-            Map<LocalDateTime, LocalDateTime> migraineEpisodes = new HashMap<>();
+            List<Result> migraineResults = new ArrayList<Result>();
             LocalDateTime migraineStartTime = null;
+            double maxPressureDrop = 0;
 
             if (forecasts == null || forecasts.isEmpty())
-                return migraineEpisodes;
+                return migraineResults;
 
             for (int i = 0; i < forecasts.size(); i++) {
                 Forecast currentForecast = forecasts.get(i);
@@ -40,25 +42,25 @@ public class ForecastAnalyzerService implements IForecastAnalyzerService {
 
                     double pressureDrop = currentPressure - nextPressure;
                     if (pressureDrop >= PRESSURE_DROP_THRESHOLD) {
+                        maxPressureDrop = Math.max(maxPressureDrop, pressureDrop);
                         pressureDropDetected = true;
-                        break;
                     }
                 }
 
-                if (pressureDropDetected) {
-                    if (migraineStartTime == null) {
-                        migraineStartTime = LocalDateTime.parse(currentForecast.getTime());
-                    }
-                } else {
-                    if (migraineStartTime != null) {
-                        LocalDateTime migraineEndTime = LocalDateTime.parse(currentForecast.getTime());
-                        migraineEpisodes.put(migraineStartTime, migraineEndTime);
-                        migraineStartTime = null;
-                    }
+                if (pressureDropDetected && migraineStartTime == null) {
+                    migraineStartTime = LocalDateTime.parse(currentForecast.getTime());
+                } else if (!pressureDropDetected && migraineStartTime != null) {
+                    LocalDateTime migraineEndTime = LocalDateTime.parse(currentForecast.getTime());
+
+                    DecimalFormat df = new DecimalFormat("#.##"); // round to two decimal points
+                    migraineResults.add(new Result(migraineStartTime, migraineEndTime,
+                            Double.parseDouble(df.format(maxPressureDrop))));
+                    migraineStartTime = null;
+                    maxPressureDrop = 0;
                 }
             }
 
-            return migraineEpisodes;
+            return migraineResults;
         });
     }
 }

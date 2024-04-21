@@ -1,9 +1,10 @@
 package edu.studio.weather.Services.Abstraction;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import edu.studio.weather.Models.Result;
+
 public interface IForecastAnalyzerService {
-    CompletableFuture<Map<LocalDateTime, LocalDateTime>> analyzeForecasts();
+    CompletableFuture<List<Result>> analyzeForecasts();
 }

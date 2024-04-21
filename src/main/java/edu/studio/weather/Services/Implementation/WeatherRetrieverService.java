@@ -35,7 +35,7 @@ public class WeatherRetrieverService implements IWeatherRetrieverService {
         try {
             JSONObject outerJsonObject = topLevelNode.getObject();
             JSONObject hourlyValues = outerJsonObject.getJSONObject("hourly");
-            System.out.println(hourlyValues.toString());
+
             Gson gson = new Gson();
             ForecastData forecastData = gson.fromJson(hourlyValues.toString(), ForecastData.class);
 

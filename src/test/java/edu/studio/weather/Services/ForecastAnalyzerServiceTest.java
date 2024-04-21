@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -16,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import edu.studio.weather.Models.Forecast;
+import edu.studio.weather.Models.Result;
 import edu.studio.weather.Services.Abstraction.IWeatherRetrieverService;
 import edu.studio.weather.Services.Implementation.ForecastAnalyzerService;
 
@@ -36,7 +36,7 @@ public class ForecastAnalyzerServiceTest {
                 .thenReturn(CompletableFuture.completedFuture(null));
 
         // Test
-        CompletableFuture<Map<LocalDateTime, LocalDateTime>> result = forecastAnalyzerService.analyzeForecasts();
+        CompletableFuture<List<Result>> result = forecastAnalyzerService.analyzeForecasts();
 
         // Verify
         assertTrue(result.get().isEmpty());
@@ -48,7 +48,7 @@ public class ForecastAnalyzerServiceTest {
                 .thenReturn(CompletableFuture.completedFuture(List.of()));
 
         // Test
-        CompletableFuture<Map<LocalDateTime, LocalDateTime>> result = forecastAnalyzerService.analyzeForecasts();
+        CompletableFuture<List<Result>> result = forecastAnalyzerService.analyzeForecasts();
 
         // Verify
         assertTrue(result.get().isEmpty());
@@ -65,8 +65,8 @@ public class ForecastAnalyzerServiceTest {
         Mockito.when(weatherRetrieverServiceMock.retrieveWeatherAsync()).thenReturn(future);
 
         // Test
-        CompletableFuture<Map<LocalDateTime, LocalDateTime>> resultFuture = forecastAnalyzerService.analyzeForecasts();
-        Map<LocalDateTime, LocalDateTime> result = resultFuture.join();
+        CompletableFuture<List<Result>> resultFuture = forecastAnalyzerService.analyzeForecasts();
+        List<Result> result = resultFuture.join();
 
         // Verify
         assertTrue(result.isEmpty());
@@ -84,13 +84,13 @@ public class ForecastAnalyzerServiceTest {
                 .thenReturn(CompletableFuture.completedFuture(List.of(forecast1, forecast2)));
 
         // Test
-        CompletableFuture<Map<LocalDateTime, LocalDateTime>> result = forecastAnalyzerService.analyzeForecasts();
+        CompletableFuture<List<Result>> result = forecastAnalyzerService.analyzeForecasts();
 
         // Verify
-        Map<LocalDateTime, LocalDateTime> migraineEpisodes = result.get();
+        List<Result> migraineEpisodes = result.join();
         assertEquals(1, migraineEpisodes.size());
-        assertTrue(migraineEpisodes.containsKey(startTime));
-        assertEquals(endTime, migraineEpisodes.get(startTime));
+        Result expectedResult = new Result(startTime, endTime, 5.0);
+        assertTrue(expectedResult.equals(migraineEpisodes.get(0)));
     }
 
     @Test
@@ -103,10 +103,10 @@ public class ForecastAnalyzerServiceTest {
                 .thenReturn(CompletableFuture.completedFuture(List.of(forecast1)));
 
         // Test
-        CompletableFuture<Map<LocalDateTime, LocalDateTime>> result = forecastAnalyzerService.analyzeForecasts();
+        CompletableFuture<List<Result>> result = forecastAnalyzerService.analyzeForecasts();
 
         // Verify
-        Map<LocalDateTime, LocalDateTime> migraineEpisodes = result.get();
+        List<Result> migraineEpisodes = result.get();
         assertEquals(0, migraineEpisodes.size());
     }
 
@@ -128,16 +128,16 @@ public class ForecastAnalyzerServiceTest {
         CompletableFuture<List<Forecast>> future = CompletableFuture.completedFuture(forecasts);
         Mockito.when(weatherRetrieverServiceMock.retrieveWeatherAsync()).thenReturn(future);
 
-        // Test analyzeForecasts method
-        CompletableFuture<Map<LocalDateTime, LocalDateTime>> resultFuture = forecastAnalyzerService.analyzeForecasts();
-        Map<LocalDateTime, LocalDateTime> migraineEpisodes = resultFuture.join();
+        // Test
+        CompletableFuture<List<Result>> resultFuture = forecastAnalyzerService.analyzeForecasts();
+        List<Result> migraineEpisodes = resultFuture.join();
 
-        // Verify migraine episodes detected
+        // Verify
         assertEquals(1, migraineEpisodes.size());
         LocalDateTime expectedStart = LocalDateTime.parse("2024-04-01T12:00:00");
         LocalDateTime expectedEnd = LocalDateTime.parse("2024-04-01T15:00:00");
-        assertTrue(migraineEpisodes.containsKey(expectedStart));
-        assertEquals(expectedEnd, migraineEpisodes.get(expectedStart));
+        Result expectedResult = new Result(expectedStart, expectedEnd, 6.0);
+        assertTrue(expectedResult.equals(migraineEpisodes.get(0)));
     }
 
     @Test
@@ -152,27 +152,27 @@ public class ForecastAnalyzerServiceTest {
                 new Forecast("2024-04-01T18:00:00", 1010.50),
                 new Forecast("2024-04-01T19:00:00", 1010.75),
                 new Forecast("2024-04-01T20:00:00", 1011.00),
-                new Forecast("2024-04-01T21:00:00", 1018.75),
+                new Forecast("2024-04-01T21:00:00", 1018.75), // potential migraine episode start as pressures falling
                 new Forecast("2024-04-01T22:00:00", 1013.45),
-                new Forecast("2024-04-01T23:00:00", 1008.35));
+                new Forecast("2024-04-01T23:00:00", 1008.25));// potential migraine episode ends as List ends
         CompletableFuture<List<Forecast>> future = CompletableFuture.completedFuture(forecasts);
         Mockito.when(weatherRetrieverServiceMock.retrieveWeatherAsync()).thenReturn(future);
 
-        // Test analyzeForecasts method
-        CompletableFuture<Map<LocalDateTime, LocalDateTime>> resultFuture = forecastAnalyzerService.analyzeForecasts();
-        Map<LocalDateTime, LocalDateTime> migraineEpisodes = resultFuture.join();
+        // Test
+        CompletableFuture<List<Result>> resultFuture = forecastAnalyzerService.analyzeForecasts();
+        List<Result> migraineEpisodes = resultFuture.join();
 
-        // Verify migraine episodes detected
+        // Verify
         assertEquals(2, migraineEpisodes.size());
 
         LocalDateTime expectedStart1 = LocalDateTime.parse("2024-04-01T12:00:00");
         LocalDateTime expectedEnd1 = LocalDateTime.parse("2024-04-01T15:00:00");
-        assertTrue(migraineEpisodes.containsKey(expectedStart1));
-        assertEquals(expectedEnd1, migraineEpisodes.get(expectedStart1));
+        Result expectedResult1 = new Result(expectedStart1, expectedEnd1, 6.0);
+        assertTrue(expectedResult1.equals(migraineEpisodes.get(0)));
 
         LocalDateTime expectedStart2 = LocalDateTime.parse("2024-04-01T21:00:00");
         LocalDateTime expectedEnd2 = LocalDateTime.parse("2024-04-01T23:00:00");
-        assertTrue(migraineEpisodes.containsKey(expectedStart2));
-        assertEquals(expectedEnd2, migraineEpisodes.get(expectedStart2));
+        Result expectedResult2 = new Result(expectedStart2, expectedEnd2, 10.5);
+        assertTrue(expectedResult2.equals(migraineEpisodes.get(1)));
     }
 }

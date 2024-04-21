@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 
 import edu.studio.weather.Config.AppConfig;
 import edu.studio.weather.External.Implementation.OpenMateoApiClient;
-import edu.studio.weather.External.Mock.OpenMateoApiClientMock;
+import edu.studio.weather.Mocks.OpenMateoApiClientMock;
 import kong.unirest.JsonNode;
 import kong.unirest.UnirestException;
 import kong.unirest.json.JSONObject;

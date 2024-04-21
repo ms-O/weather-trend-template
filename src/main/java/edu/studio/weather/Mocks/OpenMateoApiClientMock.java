@@ -1,4 +1,4 @@
-package edu.studio.weather.External.Mock;
+package edu.studio.weather.Mocks;
 
 import java.util.concurrent.CompletableFuture;
 import edu.studio.weather.Config.AppConfig;
