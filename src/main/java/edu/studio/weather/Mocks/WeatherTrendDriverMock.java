@@ -41,7 +41,7 @@ public class WeatherTrendDriverMock {
         return future;
     }
 
-    public static void main(String[] args) {
+    public void main(String[] args) {
         WeatherTrendDriverMock driver = new WeatherTrendDriverMock();
         driver.run().join();
     }

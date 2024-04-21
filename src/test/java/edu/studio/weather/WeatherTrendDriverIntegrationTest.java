@@ -16,7 +16,8 @@ public class WeatherTrendDriverIntegrationTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
 
-        WeatherTrendDriverMock.main(new String[] {});
+        WeatherTrendDriverMock weatherTrendDriverMock = new WeatherTrendDriverMock();
+        weatherTrendDriverMock.main(new String[] {});
 
         // program output
         String programOutput = outputStream.toString().trim();
