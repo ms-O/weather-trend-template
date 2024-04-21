@@ -11,6 +11,7 @@ import edu.studio.weather.Models.Forecast;
 import edu.studio.weather.Models.ForecastData;
 import edu.studio.weather.Services.Abstraction.IWeatherRetrieverService;
 import kong.unirest.JsonNode;
+import kong.unirest.json.JSONException;
 import kong.unirest.json.JSONObject;
 
 public class WeatherRetrieverService implements IWeatherRetrieverService {
@@ -22,30 +23,31 @@ public class WeatherRetrieverService implements IWeatherRetrieverService {
     }
 
     public CompletableFuture<List<Forecast>> retrieveWeatherAsync() {
-        try {
-            CompletableFuture<JsonNode> jsonFuture = openMateoApiClient.GetWeatherJsonAsync();
-            return jsonFuture.thenApply(topLevelNode -> parseWeatherJson(topLevelNode));
-        } catch (Exception e) {
-            System.out.println("Error retrieving weather data: " + e.getMessage());
-            CompletableFuture<List<Forecast>> exceptionallyCompletedFuture = new CompletableFuture<>();
-            exceptionallyCompletedFuture.completeExceptionally(e);
-            return exceptionallyCompletedFuture;
-        }
+        CompletableFuture<JsonNode> jsonFuture = openMateoApiClient.GetWeatherJsonAsync();
+        return jsonFuture.thenApply(topLevelNode -> parseWeatherJson(topLevelNode)).exceptionally(ex -> {
+            System.err.println("Error retrieving weather data: " + ex.getMessage());
+            return new ArrayList<>();
+        });
     }
 
     // Helper methods
     private List<Forecast> parseWeatherJson(JsonNode topLevelNode) {
-        JSONObject outerJsonObject = topLevelNode.getObject();
-        JSONObject hourlyValues = outerJsonObject.getJSONObject("hourly");
+        try {
+            JSONObject outerJsonObject = topLevelNode.getObject();
+            JSONObject hourlyValues = outerJsonObject.getJSONObject("hourly");
+            System.out.println(hourlyValues.toString());
+            Gson gson = new Gson();
+            ForecastData forecastData = gson.fromJson(hourlyValues.toString(), ForecastData.class);
 
-        Gson gson = new Gson();
-        ForecastData forecastData = gson.fromJson(hourlyValues.toString(), ForecastData.class);
+            List<Forecast> forecasts = new ArrayList<>();
+            for (int i = 0; i < forecastData.getTime().size(); i++) {
+                forecasts.add(new Forecast(forecastData.getTime().get(i), forecastData.getPressureMsl().get(i)));
+            }
 
-        List<Forecast> forecasts = new ArrayList<>();
-        for (int i = 0; i < forecastData.getTime().size(); i++) {
-            forecasts.add(new Forecast(forecastData.getTime().get(i), forecastData.getPressureMsl().get(i)));
+            return forecasts;
+        } catch (JSONException | NullPointerException e) {
+            System.err.println("Error parsing weather JSON: " + e.getMessage());
+            return new ArrayList<>();
         }
-
-        return forecasts;
     }
 }

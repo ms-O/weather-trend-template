@@ -25,6 +25,9 @@ public class ForecastAnalyzerService implements IForecastAnalyzerService {
             Map<LocalDateTime, LocalDateTime> migraineEpisodes = new HashMap<>();
             LocalDateTime migraineStartTime = null;
 
+            if (forecasts == null || forecasts.isEmpty())
+                return migraineEpisodes;
+
             for (int i = 0; i < forecasts.size(); i++) {
                 Forecast currentForecast = forecasts.get(i);
                 double currentPressure = currentForecast.getPressure();
@@ -53,10 +56,6 @@ public class ForecastAnalyzerService implements IForecastAnalyzerService {
                         migraineStartTime = null;
                     }
                 }
-            }
-            if (migraineStartTime != null) {
-                LocalDateTime forecastEndTime = LocalDateTime.parse(forecasts.get(forecasts.size() - 1).getTime());
-                migraineEpisodes.put(migraineStartTime, forecastEndTime);
             }
 
             return migraineEpisodes;
