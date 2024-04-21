@@ -2,7 +2,7 @@ package edu.studio.weather.Models;
 
 public class Forecast {
 
-    private String time; // TODO convert to UTC time type
+    private String time;
     private double pressure;
 
     public Forecast(String time, double pressure) {
