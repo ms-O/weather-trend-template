@@ -12,6 +12,8 @@ import kong.unirest.json.JSONObject;
 
 /*
  * Open-Meteo API interactive reference page: https://open-meteo.com/en/docs/gfs-api
+ * You may freely use this sample code in your project, 
+ * but remember to format and refactor it to meet our coding standards.
  */
 public class OpenMeteoRestDemo {
     
